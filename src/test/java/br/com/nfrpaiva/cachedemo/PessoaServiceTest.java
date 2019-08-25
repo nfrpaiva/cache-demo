@@ -71,9 +71,9 @@ public class PessoaServiceTest {
     @Test
     public void testObterPessoaDoCache() {
         pessoaService.cleanCache();
-        Pessoa nova = Pessoa.builder().nome("Nilton").id(-99L).build();
-        pessoaService.save(nova);
-        Pessoa p = pessoaService.getPessoa(nova.getId());
+        Pessoa nova = Pessoa.builder().nome("Nilton").build();
+        Pessoa result = pessoaService.save(nova);
+        Pessoa p = pessoaService.getPessoa(result.getId());
         Assertions.assertThat(p).isNotNull();
     }
 
@@ -83,7 +83,7 @@ public class PessoaServiceTest {
         map.clear();
         StopWatch sw = new StopWatch();
         sw.start();
-        int range = 5000_000;
+        int range = 500;
         IntStream.range(0, range).forEach((i)-> {
             if (i % 1000 == 0){
                 logger.info("Inserido: {}", i);

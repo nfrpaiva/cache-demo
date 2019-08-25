@@ -2,6 +2,7 @@ package br.com.nfrpaiva.cachedemo.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -13,9 +14,11 @@ import com.hazelcast.config.ManagementCenterConfig;
 import com.hazelcast.config.MapConfig;
 import com.hazelcast.config.MaxSizeConfig;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.spring.cache.HazelcastCacheManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,16 +30,19 @@ public class HazelCastConfiguration {
 
     @Bean
     public Config hazelCastConfig() {
-        Config config = new Config()
-                .setInstanceName("hazelcast-demo-test-instance")
-                .addMapConfig(pessoaMapConfig())
-                .addMapConfig(testMapMapConfig());
+        Config config = new Config();
+        
+        config
+        .setInstanceName("hz_instance_name")
+        .getGroupConfig().setName("sva-cot");
+        getMapConfigList().forEach(cfg -> config.addMapConfig(cfg));
+        
         JoinConfig join = config.getNetworkConfig().getJoin();
         join.getMulticastConfig().setEnabled(false);
-        join.getTcpIpConfig().setEnabled(false);
+        join.getTcpIpConfig().addMember("localhost").setEnabled(true);
 
         ManagementCenterConfig mcConfig = new ManagementCenterConfig();
-        mcConfig.setEnabled(true).setUrl("http://192.168.0.4:8080/hazelcast-mancenter");
+        mcConfig.setEnabled(true).setUrl("http://localhost:8080/hazelcast-mancenter");
         config.setManagementCenterConfig(mcConfig);
 
         return config;
@@ -90,9 +96,9 @@ public class HazelCastConfiguration {
     private MapConfig pessoaMapConfig() {
         return new MapConfig()
                 .setName("pessoa")
-                .setMaxSizeConfig(new MaxSizeConfig(100, MaxSizeConfig.MaxSizePolicy.FREE_HEAP_SIZE))
+                .setMaxSizeConfig(new MaxSizeConfig(100, MaxSizeConfig.MaxSizePolicy.PER_NODE))
                 .setEvictionPolicy(EvictionPolicy.LRU)
-                .setMaxIdleSeconds(5)
+                //.setMaxIdleSeconds(5)
                 .setBackupCount(0)
                 .setTimeToLiveSeconds(120);
     }
@@ -104,6 +110,11 @@ public class HazelCastConfiguration {
                 .setBackupCount(0)
                 //.setTimeToLiveSeconds(5);
                 ;
+    }
+
+    @Bean
+    public CacheManager cacheManager(HazelcastInstance hazelcastInstance) {
+        return new HazelcastCacheManager(hazelcastInstance);
     }
 
 }

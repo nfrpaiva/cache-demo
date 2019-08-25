@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ILock;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ public class HazelCastTest {
     }
 
     @Test
+    @Ignore
     public void testLock() throws  Exception {
 
         IntStream.range(1, 3).forEach((i)->{
