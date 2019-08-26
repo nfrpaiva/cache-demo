@@ -2,7 +2,6 @@ package br.com.nfrpaiva.cachedemo.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
@@ -39,7 +38,7 @@ public class HazelCastConfiguration {
         
         JoinConfig join = config.getNetworkConfig().getJoin();
         join.getMulticastConfig().setEnabled(false);
-        join.getTcpIpConfig().addMember("localhost").setEnabled(true);
+        join.getTcpIpConfig().addMember("192.168.0.10,192.168.0.4").setEnabled(true);
 
         ManagementCenterConfig mcConfig = new ManagementCenterConfig();
         mcConfig.setEnabled(true).setUrl("http://localhost:8080/hazelcast-mancenter");
