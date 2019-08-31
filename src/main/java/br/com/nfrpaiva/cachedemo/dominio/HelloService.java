@@ -21,20 +21,20 @@ public class HelloService {
     public String sayHello() {
         ILock lock = hazelcastInstance.getLock("hello");
         try {
-            logger.info("Tentando obter lock");
-            if (lock.tryLock(100, TimeUnit.MILLISECONDS)){
-                logger.info("Lock obtido");
+            // logger.info("Tentando obter lock");
+            if (lock.tryLock(100, TimeUnit.MILLISECONDS)) {
+                // logger.info("Lock obtido");
                 Thread.sleep(100);
+                hazelcastInstance.getQueue("mensagens").put("Hello service disso olá para o mundo");
                 return "Olá mundo \n";
-            }else {
+            } else {
                 throw new Exception("Não consegui obter o lock que você pediu e não fiz nada");
             }
 
-            
         } catch (Exception e) {
             logger.error("Erro ao obter o lock");
-        }finally{
-            if(lock.isLockedByCurrentThread())            
+        } finally {
+            if (lock.isLockedByCurrentThread())
                 lock.unlock();
         }
         return "Não pude dizer olá \n";

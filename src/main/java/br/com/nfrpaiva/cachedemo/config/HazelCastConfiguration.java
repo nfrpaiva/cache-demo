@@ -30,15 +30,12 @@ public class HazelCastConfiguration {
     @Bean
     public Config hazelCastConfig() {
         Config config = new Config();
-        
-        config
-        .setInstanceName("hz_instance_name")
-        .getGroupConfig().setName("sva-cot");
+
+        config.setInstanceName("hz_instance_name").getGroupConfig().setName("sva-cot");
         getMapConfigList().forEach(cfg -> config.addMapConfig(cfg));
-        
         JoinConfig join = config.getNetworkConfig().getJoin();
         join.getMulticastConfig().setEnabled(false);
-        join.getTcpIpConfig().addMember("localhost,192.168.0.10,192.168.0.4").setEnabled(true);
+        join.getTcpIpConfig().addMember("localhost").setEnabled(true);
 
         ManagementCenterConfig mcConfig = new ManagementCenterConfig();
         mcConfig.setEnabled(true).setUrl("http://localhost:8080/hazelcast-mancenter");
@@ -47,37 +44,34 @@ public class HazelCastConfiguration {
         return config;
     }
 
-    //@Bean
+    // @Bean
     public ClientConfig clientConfig() {
         ClientConfig clientConfig = new ClientConfig();
-        //clientConfig.getGroupConfig().setName("hazelcast-demo-group");
+        // clientConfig.getGroupConfig().setName("hazelcast-demo-group");
         ClientNetworkConfig networkConfig = clientConfig.getNetworkConfig();
-        networkConfig.addAddress("192.168.0.10:5701")
-                .setSmartRouting(true)
-                //.addOutboundPortDefinition("34700-34703")
-                //.setRedoOperation(true)
-                .setConnectionAttemptPeriod(5000)
-                .setConnectionTimeout(5000)
-                .setConnectionAttemptLimit(50);
+        networkConfig.addAddress("192.168.0.10:5701").setSmartRouting(true)
+                // .addOutboundPortDefinition("34700-34703")
+                // .setRedoOperation(true)
+                .setConnectionAttemptPeriod(5000).setConnectionTimeout(5000).setConnectionAttemptLimit(50);
 
         return clientConfig;
 
     }
 
-    //@Bean
+    // @Bean
     public HazelcastInstance hazelcastInstance(ClientConfig clientConfig) {
         HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
         final Config config = hazelcastInstance.getConfig();
-        
+
         mapConfigList = getMapConfigList();
         mapConfigList.forEach(cfg -> {
             try {
                 config.addMapConfig(cfg);
                 logger.info("Configuração {} adicionada com sucesos", cfg.getName());
-            }catch(Exception e){
-                logger.error("Não foi possível adicionar a configuração." + 
-                            "Esse erro  é comum quando já existe uma configuração " +
-                            "diferente da informada na aplicação no servidor", e);
+            } catch (Exception e) {
+                logger.error("Não foi possível adicionar a configuração."
+                        + "Esse erro  é comum quando já existe uma configuração "
+                        + "diferente da informada na aplicação no servidor", e);
             }
         });
 
@@ -85,30 +79,27 @@ public class HazelCastConfiguration {
         return hazelcastInstance;
     }
 
-    private List<MapConfig> getMapConfigList (){
-        List<MapConfig> maps =  new ArrayList<>();
+    private List<MapConfig> getMapConfigList() {
+        List<MapConfig> maps = new ArrayList<>();
         maps.add(pessoaMapConfig());
         maps.add(testMapMapConfig());
         return maps;
     }
 
     private MapConfig pessoaMapConfig() {
-        return new MapConfig()
-                .setName("pessoa")
+        return new MapConfig().setName("pessoa")
                 .setMaxSizeConfig(new MaxSizeConfig(100, MaxSizeConfig.MaxSizePolicy.PER_NODE))
                 .setEvictionPolicy(EvictionPolicy.LRU)
-                //.setMaxIdleSeconds(5)
-                .setBackupCount(0)
-                .setTimeToLiveSeconds(120);
+                // .setMaxIdleSeconds(5)
+                .setBackupCount(0).setTimeToLiveSeconds(120);
     }
+
     private MapConfig testMapMapConfig() {
-        return new MapConfig()
-                .setName("test-map")
+        return new MapConfig().setName("test-map")
                 .setMaxSizeConfig(new MaxSizeConfig(5_000_000, MaxSizeConfig.MaxSizePolicy.PER_NODE))
-                .setEvictionPolicy(EvictionPolicy.LRU)
-                .setBackupCount(0)
-                //.setTimeToLiveSeconds(5);
-                ;
+                .setEvictionPolicy(EvictionPolicy.LRU).setBackupCount(0)
+        // .setTimeToLiveSeconds(5);
+        ;
     }
 
     @Bean
