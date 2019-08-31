@@ -38,7 +38,7 @@ public class HazelCastConfiguration {
         
         JoinConfig join = config.getNetworkConfig().getJoin();
         join.getMulticastConfig().setEnabled(false);
-        join.getTcpIpConfig().addMember("192.168.0.10,192.168.0.4").setEnabled(true);
+        join.getTcpIpConfig().addMember("localhost,192.168.0.10,192.168.0.4").setEnabled(true);
 
         ManagementCenterConfig mcConfig = new ManagementCenterConfig();
         mcConfig.setEnabled(true).setUrl("http://localhost:8080/hazelcast-mancenter");
