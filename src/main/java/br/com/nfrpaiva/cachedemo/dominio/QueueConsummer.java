@@ -56,8 +56,9 @@ public class QueueConsummer {
 
     }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(cron = "0/5 * * * * ?")
     public void cleanUpMongo() {
+        logger.info("Limpando registros que já foram consumidos do mongo");
         template.remove(Query.query(Criteria.where("status").is("consumido")), Item.class);
     }
 
