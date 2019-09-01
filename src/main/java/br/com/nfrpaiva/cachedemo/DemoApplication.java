@@ -9,6 +9,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.messaging.DefaultMessageListenerContainer;
+import org.springframework.data.mongodb.core.messaging.MessageListenerContainer;
 
 import br.com.nfrpaiva.cachedemo.dominio.Pessoa;
 import br.com.nfrpaiva.cachedemo.dominio.PessoaRepository;
@@ -25,13 +28,19 @@ public class DemoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner runner (){
+	public CommandLineRunner runner() {
 		return args -> {
-			LongStream.range(1, 10).forEach((i)->{
+			LongStream.range(1, 10).forEach((i) -> {
 				pessoaRepository.save(Pessoa.builder().nome("Um nome " + UUID.randomUUID().toString()).build());
 			});
+
 		};
 	}
 
-}
+	@Bean
+	public MessageListenerContainer messageListenerContainer(MongoTemplate mongoTemplate) {
+		return new DefaultMessageListenerContainer(mongoTemplate);
 
+	}
+
+}

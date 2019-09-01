@@ -6,8 +6,16 @@ import com.hazelcast.core.IQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import br.com.nfrpaiva.cachedemo.mongodb.Item;
 
 @Service
 public class QueueConsummer {
@@ -16,6 +24,9 @@ public class QueueConsummer {
 
     @Autowired
     private HazelcastInstance hazelcastInstance;
+
+    @Autowired
+    private MongoTemplate template;
 
     @Scheduled(fixedDelay = 1)
     public void consumer() {
@@ -32,6 +43,22 @@ public class QueueConsummer {
             e.printStackTrace();
         }
 
+    }
+
+    @Scheduled(fixedRate = 10)
+    @Async
+    public void mongodbConsumer() {
+        Query query = Query.query(Criteria.where("status").is(null));
+        Item item = template.findAndModify(query, Update.update("status", "consumido"),
+                FindAndModifyOptions.options().returnNew(true), Item.class);
+        if (item != null)
+            logger.info("Mensagem consumida do mongo db: {}", item);
+
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void cleanUpMongo() {
+        template.remove(Query.query(Criteria.where("status").is("consumido")), Item.class);
     }
 
 }
