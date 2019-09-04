@@ -30,7 +30,7 @@ public class HelloService {
         try {
             if (lock.tryLock(100, TimeUnit.MILLISECONDS)) {
                 hazelcastInstance.getQueue("mensagens").put("Hello service disso olá para o mundo");
-                repository.save(new Item("Hello service disso olá para o mundo"));
+                repository.save(new Item("Hello service disse olá para o mundo"));
                 return "Olá mundo \n";
             } else {
                 throw new Exception("Não consegui obter o lock que você pediu e não fiz nada");
