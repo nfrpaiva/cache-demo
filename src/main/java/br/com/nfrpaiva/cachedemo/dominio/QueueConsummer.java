@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.HazelcastInstanceNotActiveException;
 import com.hazelcast.core.ILock;
 import com.hazelcast.core.IQueue;
 
@@ -44,11 +45,13 @@ public class QueueConsummer {
         } catch (InterruptedException e) {
             logger.error("Parece que depois de muito esperar deu um erro", e.getMessage());
             e.printStackTrace();
+        } catch (HazelcastInstanceNotActiveException e) {
+            logger.info("Hazelcast não estar mais ativo. Estamos em processo de desligamento?");
         }
 
     }
 
-    @Scheduled(fixedRate = 1000)    
+    @Scheduled(fixedRate = 1000)
     @Async
     public void mongodbConsumer() {
         Query query = Query.query(Criteria.where("status").is(null));
@@ -63,7 +66,8 @@ public class QueueConsummer {
                 List<Item> itens = template.find(query.limit(1000), Item.class);
                 itens.stream().forEach(item -> {
                     logger.info("Mensagem consumida do mongo db: {}", item);
-                    template.updateFirst(Query.query(Criteria.where("_id").is(item.getId())), Update.update("status", "consumido"),Item.class);
+                    template.updateFirst(Query.query(Criteria.where("_id").is(item.getId())),
+                            Update.update("status", "consumido"), Item.class);
                 });
             } else {
                 logger.warn("Consumo de mensagens ocorrendo em outra instancia");
