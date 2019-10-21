@@ -56,7 +56,7 @@ public class PessoaServiceTest {
     @Test
     public void testSalvarPessoas() {
         pessoaService.cleanCache();
-        LongStream.range(1, 100_000).forEach((id) ->
+        LongStream.range(1, 10).forEach((id) ->
                 {
                     Pessoa p = Pessoa
                             .builder()
