@@ -3,6 +3,9 @@ package br.com.nfrpaiva.cachedemo;
 import java.util.UUID;
 import java.util.stream.LongStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -22,6 +25,8 @@ public class DemoApplication {
 
 	@Autowired
 	private PessoaRepository pessoaRepository;
+	
+	private Logger log = LoggerFactory.getLogger(DemoApplication.class);
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
@@ -29,8 +34,11 @@ public class DemoApplication {
 
 	@Bean
 	public CommandLineRunner runner() {
+		MDC.put("UMA CHAVE GRANDE", "UM GRANDE VALORSS");
+		log.info("XXXXXXXXXXXXXXXXXXXXXXXXX");
 		return args -> {
 			LongStream.range(1, 10).forEach((i) -> {
+				log.info("XXXXXXXXXXXXXXXXXXXXXXXXXXX - Adding pessoa");
 				pessoaRepository.save(Pessoa.builder().nome("Um nome " + UUID.randomUUID().toString()).build());
 			});
 
