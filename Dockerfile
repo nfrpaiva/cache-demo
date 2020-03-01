@@ -1,4 +1,4 @@
-FROM gradle
+FROM gradle:5.4.1
 WORKDIR /var/gradle
 COPY .gradle /root/.gradle
 #COPY . . 
