@@ -1,14 +1,12 @@
-version: '3'
+version: "3"
 services:
   cache-demo:
     build: .
     #ports:
-    #- "3333:3333"  
+    #- "3333:3333"
     environment:
-    - SERVER_PORT=3333
-    - SPRING_DATA_MONGODB_HOST=mongodb
-    links:
-      - mongodb
+      - SERVER_PORT=3333
+      - SPRING_DATA_MONGODB_HOST=mongodb
   mongodb:
     image: mongo
     hostname: mongo-server
