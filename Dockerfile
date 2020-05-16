@@ -1,6 +1,6 @@
-FROM gradle:5.4.1
+FROM gradle:6.4.0
 WORKDIR /var/gradle
-COPY .gradle /root/.gradle
+#COPY .gradle /root/.gradle
 #COPY . . 
 RUN git clone https://github.com/nfrpaiva/cache-demo.git
 WORKDIR /var/gradle/cache-demo
